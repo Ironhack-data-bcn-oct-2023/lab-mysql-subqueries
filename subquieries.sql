@@ -117,7 +117,7 @@ WHERE
         FROM inventory where inventory_id in (SELECT inventory_id from rental
         where rental_id in (select rental_id from payment where customer_id = (select customer_id from payment
         group by customer_id
-        order by count(*)desc 
+        order by sum(amount)desc 
         limit 1
         ))));
         """
