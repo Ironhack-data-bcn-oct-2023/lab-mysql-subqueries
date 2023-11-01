@@ -68,22 +68,26 @@ SELECT concat(first_name, " ", last_name) as ACTOR, count(film_actor.actor_id) A
     limit 1;
    
 
+SELECT title
+FROM film
+WHERE film_id IN (SELECT film_id
+					FROM film_actor
+					WHERE actor_id IN (SELECT actor_id
+										FROM (SELECT actor_id, COUNT(film_id) AS count
+												FROM film_actor
+                                                GROUP BY actor_id
+                                                ORDER BY count DESC
+                                                LIMIT 1) AS actor_id));
 
-SELECT actor_id, concat(first_name," ", last_name) as ACTOR
-FROM actor
-WHERE actor_id = (
-    SELECT actor_id
-    FROM film_actor
-    GROUP BY actor_id
-    ORDER BY COUNT(*) DESC
-    LIMIT 1);
+
 
 
 
 
 -- 7. Films rented by most profitable customer. You can use the customer table and payment table to find the most profitable customer ie the customer that has made the largest sum of payments
 
-SELECT film.title AS Movies
+
+SELECT film.title
 FROM film
 INNER JOIN inventory ON film.film_id = inventory.film_id
 INNER JOIN rental ON inventory.inventory_id = rental.inventory_id
@@ -97,11 +101,12 @@ WHERE rental.customer_id = (
 
 
 
+
 -- 8. Get the `client_id` and the `total_amount_spent` of those clients who spent more than the average of the `total_amount` spent by each client.
 
 SELECT customer_id, SUM(amount) AS total_spent
 FROM payment
 GROUP BY customer_id
-HAVING total_amount_spent > (SELECT AVG(amount) FROM payment);
+HAVING total_spent > (SELECT AVG(amount) FROM payment);
 
 
