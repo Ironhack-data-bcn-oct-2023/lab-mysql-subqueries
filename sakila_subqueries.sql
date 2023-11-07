@@ -63,8 +63,8 @@ SELECT title
 
 -- 7. Films rented by most profitable customer. You can use the customer table and payment table to find the most profitable customer ie the customer that has made the largest sum of payments
 
-SELECT customer_id, first_name, last_name, (SELECT SUM(amount) FROM payment p WHERE c.customer_id = p.customer_id) AS total_payments
-FROM customer c
+SELECT customer_id, first_name, last_name, (SELECT SUM(amount) FROM payment WHERE customer.customer_id = payment.customer_id) AS total_payments
+FROM customer 
 WHERE customer_id = (
     SELECT customer_id
     FROM payment
@@ -72,6 +72,18 @@ WHERE customer_id = (
     ORDER BY SUM(amount) DESC
     LIMIT 1);
 	#Answer: KARL SEAL 
+    
+    SELECT film.title
+FROM film
+INNER JOIN inventory ON film.film_id = inventory.film_id
+INNER JOIN rental ON inventory.inventory_id = rental.inventory_id
+WHERE rental.customer_id = (
+    SELECT customer_id
+    FROM payment
+    GROUP BY customer_id
+    ORDER BY SUM(amount) DESC
+    LIMIT 1
+);
 
 -- 8. Get the `client_id` and the `total_amount_spent` of those clients who spent more than the average of the `total_amount` spent by each client.
 SELECT customer_id AS client_id, total_amount_spent
